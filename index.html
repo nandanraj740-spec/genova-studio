@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genova Studio - AI Image Generation</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #45a049;
+            --primary-light: rgba(76, 175, 80, 0.1);
+            --primary-border: rgba(76, 175, 80, 0.2);
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --white: #ffffff;
+            --background-light: #f9fafb;
+        }
+
+        .profile-section {
+            display: none;
+            position: absolute;
+            top: calc(100% + 15px);
+            right: -10px;
+            width: 320px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.15),
+                        0 2px 10px rgba(76, 175, 80, 0.08);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px) scale(0.98);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(76, 175, 80, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 0;
+        }
+
+        .profile-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(to right, rgba(76, 175, 80, 0.05), transparent);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-info {
+            flex-grow: 1;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-details {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(76, 175, 80, 0.04);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .detail-item:hover {
+            background: rgba(76, 175, 80, 0.08);
+            transform: translateX(4px);
+            border-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            color: #7f8c8d;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 4px 8px;
+            background: rgba(76, 175, 80, 0.08);
+            border-radius: 6px;
+        }
+
+        .logout-button {
+            width: calc(100% - 40px);
+            margin: 10px 20px 20px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .logout-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+        }
+
+        .profile-trigger {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            margin-left: 20px;
+        }
+
+        .profile-trigger:hover {
+            background-color: rgba(76, 175, 80, 0.15);
+            transform: scale(1.05);
+        }
+
+        .profile-mini-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        .profile-trigger:hover .profile-section {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .profile-section::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 24px;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.98);
+            transform: rotate(45deg);
+            border-left: 1px solid rgba(76, 175, 80, 0.1);
+            border-top: 1px solid rgba(76, 175, 80, 0.1);
+        }
+
+        /* Hide auth links when logged in */
+        .auth-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .auth-links.hidden {
+            display: none;
+        }
+
+        .profile-nav {
+            display: none;
+        }
+
+        .profile-nav.show {
+            display: flex;
+            align-items: center;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+<!-- Toggle button for mobile -->
+<div class="nav-toggle" id="navToggle">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+    <!-- Main Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="logo-section">
+                <a href="index.html" class="logo-link">
+                    <span class="logo-text">Genova Studio</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="active">Home</a>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+                <a href="#models">Models</a>
+                
+                <!-- Authentication Links (shown when not logged in) -->
+                <div class="auth-links" id="authLinks">
+                    <a href="login.html">Login</a>
+                    <a href="signup.html">Sign Up</a>
+                </div>
+                
+                <!-- Profile Section (shown when logged in) -->
+                <div class="profile-nav" id="profileNav">
+                    <a href="generator.html">Generate</a>
+                    <div class="profile-trigger">
+                        <div class="profile-mini-avatar">
+                            <span id="miniProfileInitials">...</span>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div class="profile-section">
+                            <div class="profile-header">
+                                <div class="profile-avatar" id="profileAvatar">
+                                    <div id="profileLoadingSpinner" class="loading-spinner" style="display: none;"></div>
+                                    <span id="profileInitials"></span>
+                                </div>
+                                <div class="profile-info">
+                                    <h2 class="profile-name" id="profileName">
+                                        Loading...
+                                        <span class="status-indicator" style="width: 6px; height: 6px;"></span>
+                                    </h2>
+                                    <p class="profile-email" id="profileEmail">Loading...</p>
+                                </div>
+                            </div>
+                            <div class="profile-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Username</span>
+                                    <span class="detail-value" id="profileUsername">Loading...</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Member Since</span>
+                                    <span class="detail-value" id="memberSince">Loading...</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Account Status</span>
+                                    <span class="detail-value" style="color: #4CAF50;">Active</span>
+                                </div>
+                            </div>
+                            <button class="logout-button" onclick="logout()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home" style="background-image: url('images/banner-bg.jpg')">
+        <div class="hero-content">
+            <h1>Create the <span class="highlight">Impossible</span></h1>
+            <p class="hero-text">Transform your imagination into stunning visuals with our advanced AI technology</p>
+            <a href="#" id="heroCtaButton" class="cta-button">Start Creating</a>
+        </div>
+        <div class="hero-gallery">
+            <img src="images/featured-01.jpg" alt="AI Art 1" class="gallery-item">
+            <img src="images/featured-02.jpg" alt="AI Art 2" class="gallery-item">
+            <img src="images/featured-03.jpg" alt="AI Art 3" class="gallery-item">
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="section-container">
+            <h2>Unleash Your <span class="highlight">Creative Potential</span></h2>
+            <p class="section-description">Experience the future of digital art creation with our state-of-the-art AI image generator</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="images/icon-01.png" alt="Style Options">
+                    </div>
+                    <h3>Multiple Style Options</h3>
+                    <p>Choose from various artistic styles including Realistic, Artistic, Abstract, and Futuristic to perfectly match your vision.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="images/icon-01.png" alt="Advanced AI">
+                    </div>
+                    <h3>Advanced AI Technology</h3>
+                    <p>Powered by state-of-the-art Hugging Face API, delivering high-quality and unique images in seconds.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="images/icon-01.png" alt="User Friendly">
+                    </div>
+                    <h3>User-Friendly Interface</h3>
+                    <p>Intuitive design makes it easy to generate, download, and share your creations with just a few clicks.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="images/icon-01.png" alt="High Resolution">
+                    </div>
+                    <h3>High Resolution Output</h3>
+                    <p>Generate stunning high-resolution images perfect for both digital and print applications.</p>
+                </div>
+            </div>
+
+            <div class="features-cta">
+                <div class="features-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">4+</span>
+                        <span class="stat-label">Art Styles</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">HD</span>
+                        <span class="stat-label">Quality</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">Fast</span>
+                        <span class="stat-label">Generation</span>
+                    </div>
+                </div>
+                <a href="#" id="featuresCtaButton" class="cta-button">Try It Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About This Project Section -->
+    <section class="about-section" id="about">
+        <div class="section-container">
+            <h2>About <span class="highlight">This Project</span></h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Genova Studio is an advanced AI image generation platform that leverages state-of-the-art machine learning models to transform text descriptions into stunning visual artwork. Built with modern web technologies and powered by the Hugging Face API, this tool provides access to multiple cutting-edge AI models including Stable Diffusion XL, Openjourney, and more.</p>
+                    <div class="about-features">
+                        <h3>Key Features</h3>
+                        <ul>
+                            <li>Multiple AI Models - Choose from various state-of-the-art image generation models</li>
+                            <li>Flexible Aspect Ratios - Create images in different formats (square, landscape, portrait)</li>
+                            <li>User-Friendly Interface - Simple and intuitive design for seamless creation</li>
+                            <li>Instant Download & Share - Save or share your generated artwork with ease</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="images/featured-01.jpg" alt="AI Generated Art Example">
+                    <div class="image-caption">Example of AI-generated artwork</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Models Section -->
+    <section class="models-section" id="models">
+        <div class="section-container">
+            <h2>Powerful <span class="highlight">AI Models</span></h2>
+            <p class="section-description">Choose from our selection of cutting-edge AI models, each with unique capabilities and styles</p>
+            
+            <div class="models-grid">
+                <div class="model-card">
+                    <h3>Stable Diffusion XL</h3>
+                    <div class="model-specs">
+                        <span class="spec-tag">High Resolution</span>
+                        <span class="spec-tag">Photorealistic</span>
+                    </div>
+                    <p>The latest version of Stable Diffusion, offering exceptional image quality and photorealistic results. Perfect for creating highly detailed and professional-quality images.</p>
+                    <ul class="model-features">
+                        <li>Superior image quality</li>
+                        <li>Enhanced photorealism</li>
+                        <li>Better composition</li>
+                        <li>Improved lighting effects</li>
+                    </ul>
+                </div>
+
+                <div class="model-card">
+                    <h3>Stable Diffusion v1.5</h3>
+                    <div class="model-specs">
+                        <span class="spec-tag">Versatile</span>
+                        <span class="spec-tag">Fast</span>
+                    </div>
+                    <p>A well-balanced model that excels at creating a wide range of artistic styles. Great for both artistic and realistic images with fast generation times.</p>
+                    <ul class="model-features">
+                        <li>Quick generation</li>
+                        <li>Diverse art styles</li>
+                        <li>Good consistency</li>
+                        <li>Reliable results</li>
+                    </ul>
+                </div>
+
+                <div class="model-card">
+                    <h3>Stable Diffusion v1.4</h3>
+                    <div class="model-specs">
+                        <span class="spec-tag">Efficient</span>
+                        <span class="spec-tag">Reliable</span>
+                    </div>
+                    <p>A stable and efficient model that's perfect for quick iterations and experimentation. Ideal for testing ideas and concepts.</p>
+                    <ul class="model-features">
+                        <li>Resource efficient</li>
+                        <li>Fast iterations</li>
+                        <li>Good for sketches</li>
+                        <li>Consistent style</li>
+                    </ul>
+                </div>
+
+                <div class="model-card">
+                    <h3>Stable Diffusion 2.1</h3>
+                    <div class="model-specs">
+                        <span class="spec-tag">Advanced</span>
+                        <span class="spec-tag">Detailed</span>
+                    </div>
+                    <p>An advanced model with improved understanding of complex prompts and better handling of faces and anatomy.</p>
+                    <ul class="model-features">
+                        <li>Better faces & anatomy</li>
+                        <li>Complex compositions</li>
+                        <li>Improved details</li>
+                        <li>Advanced textures</li>
+                    </ul>
+                </div>
+
+                <div class="model-card">
+                    <h3>Openjourney v4</h3>
+                    <div class="model-specs">
+                        <span class="spec-tag">Artistic</span>
+                        <span class="spec-tag">Stylized</span>
+                    </div>
+                    <p>Specialized in creating artistic and stylized images with a unique aesthetic. Perfect for creative and imaginative artwork.</p>
+                    <ul class="model-features">
+                        <li>Unique art style</li>
+                        <li>Creative effects</li>
+                        <li>Artistic flair</li>
+                        <li>Vibrant colors</li>
+                    </ul>
+                </div>
+
+                <div class="model-card">
+                    <h3>FLUX.1-schnell</h3>
+                    <div class="model-specs">
+                        <span class="spec-tag">Fast</span>
+                        <span class="spec-tag">Modern</span>
+                    </div>
+                    <p>A modern, optimized model focused on speed while maintaining good quality. Great for rapid prototyping and quick visualizations.</p>
+                    <ul class="model-features">
+                        <li>Quick generation</li>
+                        <li>Modern aesthetic</li>
+                        <li>Good quality</li>
+                        <li>Efficient processing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <span class="logo-text">Genova Studio</span>
+            <p>&copy; 2025 Genova Studio. Powered by Hugging Face API</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Function to get user initials
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase();
+        }
+
+        // Function to format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Function to show loading state
+        function showLoading() {
+            const spinner = document.getElementById('profileLoadingSpinner');
+            const initials = document.getElementById('profileInitials');
+            const miniInitials = document.getElementById('miniProfileInitials');
+            
+            if (spinner) spinner.style.display = 'block';
+            if (initials) initials.style.display = 'none';
+            if (miniInitials) miniInitials.textContent = '...';
+            
+            document.getElementById('profileName').textContent = 'Loading...';
+            document.getElementById('profileEmail').textContent = 'Loading...';
+            document.getElementById('profileUsername').textContent = 'Loading...';
+            document.getElementById('memberSince').textContent = 'Loading...';
+        }
+
+        // Function to show error state
+        function showError(message) {
+            const spinner = document.getElementById('profileLoadingSpinner');
+            const initials = document.getElementById('profileInitials');
+            if (spinner) spinner.style.display = 'none';
+            if (initials) {
+                initials.style.display = 'block';
+                initials.textContent = '!';
+            }
+            
+            document.getElementById('profileName').textContent = 'Error loading profile';
+            document.getElementById('profileEmail').textContent = message;
+            document.getElementById('profileUsername').textContent = 'N/A';
+            document.getElementById('memberSince').textContent = 'N/A';
+        }
+
+        // Load user profile data
+        function loadUserProfile() {
+            const userDataString = localStorage.getItem('currentUser');
+            if (!userDataString) {
+                return; // User not logged in, keep showing auth links
+            }
+
+            try {
+                const userData = JSON.parse(userDataString);
+                showLoading();
+                
+                // Show profile navigation and hide auth links
+                document.getElementById('authLinks').classList.add('hidden');
+                document.getElementById('profileNav').classList.add('show');
+                
+                // Update CTA buttons to go to generator instead of login
+                document.getElementById('heroCtaButton').href = 'generator.html';
+                document.getElementById('featuresCtaButton').href = 'generator.html';
+                
+                // Fetch additional user data from server
+                fetch('get_user_profile.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: userData.username })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const spinner = document.getElementById('profileLoadingSpinner');
+                    const initials = document.getElementById('profileInitials');
+                    if (spinner) spinner.style.display = 'none';
+                    
+                    if (data.success) {
+                        // Update profile information
+                        document.getElementById('profileName').textContent = data.username;
+                        document.getElementById('profileEmail').textContent = data.email;
+                        document.getElementById('profileUsername').textContent = data.username;
+                        document.getElementById('memberSince').textContent = formatDate(data.created_at);
+                        
+                        if (initials) {
+                            initials.style.display = 'block';
+                            initials.textContent = getInitials(data.username);
+                        }
+                        
+                        // Update mini profile
+                        updateMiniProfile(data.username);
+                    } else {
+                        showError(data.message || 'Failed to load profile');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading profile:', error);
+                    // If profile loading fails, still show basic info from localStorage
+                    const spinner = document.getElementById('profileLoadingSpinner');
+                    const initials = document.getElementById('profileInitials');
+                    if (spinner) spinner.style.display = 'none';
+                    if (initials) {
+                        initials.style.display = 'block';
+                        initials.textContent = getInitials(userData.username);
+                    }
+                    
+                    document.getElementById('profileName').textContent = userData.username;
+                    document.getElementById('profileEmail').textContent = userData.email || 'N/A';
+                    document.getElementById('profileUsername').textContent = userData.username;
+                    document.getElementById('memberSince').textContent = 'Recently';
+                    
+                    updateMiniProfile(userData.username);
+                });
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+                // Invalid session data, remove it and show auth links
+                localStorage.removeItem('currentUser');
+                document.getElementById('authLinks').classList.remove('hidden');
+                document.getElementById('profileNav').classList.remove('show');
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('currentUser');
+            // Show auth links and hide profile
+            document.getElementById('authLinks').classList.remove('hidden');
+            document.getElementById('profileNav').classList.remove('show');
+            // Update CTA buttons back to login
+            document.getElementById('heroCtaButton').href = 'login.html';
+            document.getElementById('featuresCtaButton').href = 'login.html';
+        }
+
+        // Update mini profile avatar
+        function updateMiniProfile(username) {
+            const miniInitials = document.getElementById('miniProfileInitials');
+            if (miniInitials) {
+                miniInitials.textContent = getInitials(username);
+            }
+        }
+
+        // Check auth status and load profile on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserProfile();
+            
+            // Set default CTA button links
+            const userDataString = localStorage.getItem('currentUser');
+            if (!userDataString) {
+                document.getElementById('heroCtaButton').href = 'login.html';
+                document.getElementById('featuresCtaButton').href = 'login.html';
+            }
+        });
+
+        // Mobile navigation toggle
+        const navToggle = document.getElementById('navToggle');
+        const mainNav = document.querySelector('.main-nav');
+
+        navToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+        });
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>

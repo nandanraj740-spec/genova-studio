@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Models - Genova Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .models-page {
+            min-height: 100vh;
+            background: var(--background-light);
+            padding-top: 60px;
+        }
+
+        .models-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .models-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .models-header h1 {
+            font-size: 36px;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+
+        .models-header p {
+            font-size: 18px;
+            color: #2c3e50;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .model-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            border-color: #4CAF50;
+        }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .model-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(76, 175, 80, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .model-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #4CAF50;
+        }
+
+        .model-title {
+            flex: 1;
+        }
+
+        .model-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .model-version {
+            font-size: 14px;
+            color: #4CAF50;
+        }
+
+        .model-description {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .model-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .feature-tag {
+            padding: 6px 12px;
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .model-action {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .try-model-btn {
+            padding: 8px 16px;
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .try-model-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .comparison-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .comparison-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .comparison-header h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .comparison-item {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid rgba(76, 175, 80, 0.1);
+            border-radius: 12px;
+            background: rgba(76, 175, 80, 0.02);
+        }
+
+        .comparison-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .comparison-value {
+            font-size: 24px;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .comparison-description {
+            color: #2c3e50;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .model-specs {
+            background: rgba(76, 175, 80, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+        }
+
+        .spec-item {
+            margin-bottom: 8px;
+        }
+
+        .spec-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-right: 8px;
+        }
+
+        .spec-value {
+            color: #2c3e50;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="models-page">
+    <script>
+        // Check authentication
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <!-- Main Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="logo-section">
+                <a href="index.html" class="logo-link">
+                    <span class="logo-text">Genova Studio</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="models.html" class="active">Models</a>
+                <a href="generator.html">Generate</a>
+                <div class="profile-trigger" id="profileTrigger">
+                    <!-- Profile section will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="models-container">
+        <div class="models-header">
+            <h1>AI Image Generation Models</h1>
+            <p>Explore our collection of state-of-the-art AI models for image generation. Each model has its unique strengths and specialties.</p>
+        </div>
+
+        <div class="models-grid">
+            <!-- Stable Diffusion XL -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <div class="model-title">
+                        <div class="model-name">Stable Diffusion XL</div>
+                        <div class="model-version">Base 1.0</div>
+                    </div>
+                </div>
+                <div class="model-description">
+                    Stable Diffusion XL represents the cutting edge in AI image generation. It features a significantly larger neural network and has been trained on a more diverse dataset. This model excels at understanding complex prompts and generating images with exceptional detail, better anatomy, and more accurate proportions. Perfect for professional-quality artwork and photorealistic images.
+                </div>
+                <div class="model-features">
+                    <span class="feature-tag">1024×1024 Resolution</span>
+                    <span class="feature-tag">Photorealistic</span>
+                    <span class="feature-tag">Advanced Composition</span>
+                    <span class="feature-tag">Better Faces</span>
+                    <span class="feature-tag">Accurate Text</span>
+                    <span class="feature-tag">Complex Scenes</span>
+                </div>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <span class="spec-label">Best For:</span>
+                        <span class="spec-value">Professional artwork, photorealistic images, detailed illustrations</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Processing Time:</span>
+                        <span class="spec-value">8-15 seconds</span>
+                    </div>
+                </div>
+                <div class="model-action">
+                    <a href="generator.html?model=sdxl" class="try-model-btn">
+                        Try Model
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stable Diffusion 2.1 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="model-title">
+                        <div class="model-name">Stable Diffusion 2.1</div>
+                        <div class="model-version">Latest Release</div>
+                    </div>
+                </div>
+                <div class="model-description">
+                    Stable Diffusion 2.1 is a refined version of the original model, offering improved image quality and better prompt understanding. This version introduces enhanced text rendering, better face generation, and more consistent image quality. It's particularly good at creating coherent images with multiple subjects and handling complex compositions while maintaining faster processing times.
+                </div>
+                <div class="model-features">
+                    <span class="feature-tag">768×768 Resolution</span>
+                    <span class="feature-tag">Fast Generation</span>
+                    <span class="feature-tag">Style Variety</span>
+                    <span class="feature-tag">Balanced Quality</span>
+                    <span class="feature-tag">Memory Efficient</span>
+                    <span class="feature-tag">Stable Output</span>
+                </div>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <span class="spec-label">Best For:</span>
+                        <span class="spec-value">Quick iterations, artistic projects, general-purpose generation</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Processing Time:</span>
+                        <span class="spec-value">6-10 seconds</span>
+                    </div>
+                </div>
+                <div class="model-action">
+                    <a href="generator.html?model=sd2" class="try-model-btn">
+                        Try Model
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Openjourney -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                    <div class="model-title">
+                        <div class="model-name">Openjourney</div>
+                        <div class="model-version">Version 4 (Midjourney Style)</div>
+                    </div>
+                </div>
+                <div class="model-description">
+                    Openjourney v4 is specifically fine-tuned to create artistic and stylized images similar to Midjourney's signature style. This model excels at creating dramatic, artistic compositions with unique lighting effects and creative interpretations. It's particularly strong in fantasy, sci-fi, and conceptual art, offering a distinct artistic flair to every generation.
+                </div>
+                <div class="model-features">
+                    <span class="feature-tag">Artistic Style</span>
+                    <span class="feature-tag">Creative Freedom</span>
+                    <span class="feature-tag">Unique Effects</span>
+                    <span class="feature-tag">Dramatic Lighting</span>
+                    <span class="feature-tag">Fantasy Focus</span>
+                    <span class="feature-tag">Style Consistency</span>
+                </div>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <span class="spec-label">Best For:</span>
+                        <span class="spec-value">Artistic illustrations, concept art, fantasy scenes, creative projects</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Processing Time:</span>
+                        <span class="spec-value">7-12 seconds</span>
+                    </div>
+                </div>
+                <div class="model-action">
+                    <a href="generator.html?model=openjourney" class="try-model-btn">
+                        Try Model
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- FLUX.1-schnell -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <div class="model-title">
+                        <div class="model-name">FLUX.1-schnell</div>
+                        <div class="model-version">Latest Release</div>
+                    </div>
+                </div>
+                <div class="model-description">
+                    FLUX.1-schnell is optimized for rapid image generation while maintaining high quality. It excels in creating dynamic, fluid compositions with a focus on speed and efficiency. This model is particularly effective for quick iterations and real-time creative workflows, making it ideal for rapid prototyping and concept development.
+                </div>
+                <div class="model-features">
+                    <span class="feature-tag">Fast Processing</span>
+                    <span class="feature-tag">Dynamic Compositions</span>
+                    <span class="feature-tag">Efficient Workflow</span>
+                    <span class="feature-tag">Quick Iterations</span>
+                    <span class="feature-tag">Real-time Creation</span>
+                    <span class="feature-tag">Resource Efficient</span>
+                </div>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <span class="spec-label">Best For:</span>
+                        <span class="spec-value">Rapid prototyping, concept art, quick iterations, real-time workflows</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Processing Time:</span>
+                        <span class="spec-value">3-6 seconds</span>
+                    </div>
+                </div>
+                <div class="model-action">
+                    <a href="generator.html?model=flux" class="try-model-btn">
+                        Try Model
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stable Diffusion v1.4 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <div class="model-title">
+                        <div class="model-name">Stable Diffusion v1.4</div>
+                        <div class="model-version">Classic Release</div>
+                    </div>
+                </div>
+                <div class="model-description">
+                    Stable Diffusion v1.4 is a reliable and well-tested model that offers a balanced approach to image generation. Known for its consistency and predictable results, this version provides excellent performance across a wide range of use cases. It's particularly good at handling traditional artistic styles and realistic compositions.
+                </div>
+                <div class="model-features">
+                    <span class="feature-tag">Balanced Performance</span>
+                    <span class="feature-tag">Consistent Results</span>
+                    <span class="feature-tag">Traditional Art</span>
+                    <span class="feature-tag">Realistic Style</span>
+                    <span class="feature-tag">Versatile Use</span>
+                    <span class="feature-tag">Well-Tested</span>
+                </div>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <span class="spec-label">Best For:</span>
+                        <span class="spec-value">Traditional artwork, realistic images, general-purpose generation</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Processing Time:</span>
+                        <span class="spec-value">5-8 seconds</span>
+                    </div>
+                </div>
+                <div class="model-action">
+                    <a href="generator.html?model=sd14" class="try-model-btn">
+                        Try Model
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stable Diffusion v1.5 -->
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M2 12h20"/>
+                            <path d="M12 2l4 4M12 2l-4 4"/>
+                            <path d="M12 22l4-4M12 22l-4-4"/>
+                        </svg>
+                    </div>
+                    <div class="model-title">
+                        <div class="model-name">Stable Diffusion v1.5</div>
+                        <div class="model-version">Enhanced Classic</div>
+                    </div>
+                </div>
+                <div class="model-description">
+                    Stable Diffusion v1.5 builds upon v1.4 with improved image quality and better prompt interpretation. This version offers enhanced detail generation, more accurate color reproduction, and better handling of complex scenes. It maintains the reliability of v1.4 while delivering superior results in terms of image coherence and artistic quality.
+                </div>
+                <div class="model-features">
+                    <span class="feature-tag">Enhanced Detail</span>
+                    <span class="feature-tag">Better Colors</span>
+                    <span class="feature-tag">Complex Scenes</span>
+                    <span class="feature-tag">Artistic Quality</span>
+                    <span class="feature-tag">Reliable Output</span>
+                    <span class="feature-tag">Improved Coherence</span>
+                </div>
+                <div class="model-specs">
+                    <div class="spec-item">
+                        <span class="spec-label">Best For:</span>
+                        <span class="spec-value">Detailed artwork, complex compositions, color-sensitive projects</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Processing Time:</span>
+                        <span class="spec-value">6-9 seconds</span>
+                    </div>
+                </div>
+                <div class="model-action">
+                    <a href="generator.html?model=sd15" class="try-model-btn">
+                        Try Model
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-section">
+            <div class="comparison-header">
+                <h2>Model Comparison</h2>
+            </div>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <div class="comparison-title">Image Quality</div>
+                    <div class="comparison-value">HD+</div>
+                    <div class="comparison-description">Up to 1024x1024 resolution with exceptional detail and clarity</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-title">Generation Speed</div>
+                    <div class="comparison-value">Fast</div>
+                    <div class="comparison-description">Average generation time of 6-12 seconds per image</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="comparison-title">Style Variety</div>
+                    <div class="comparison-value">100+</div>
+                    <div class="comparison-description">Wide range of artistic styles and visual effects</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="auth.js"></script>
+</body>
+</html> 

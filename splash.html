@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Genova Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #45a049;
+            --background: #0a0a0a;
+        }
+
+        body {
+            background: var(--background);
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .splash-screen {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        .logo-container {
+            position: relative;
+            text-align: center;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            50% { transform: translateY(-20px) rotateX(5deg); }
+        }
+
+        .logo-text {
+            font-size: 80px;
+            font-weight: 700;
+            color: #fff;
+            position: relative;
+            margin: 0;
+            padding: 0;
+            text-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .logo-text span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px);
+            filter: blur(10px);
+            position: relative;
+        }
+
+        .logo-text span::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            bottom: -5px;
+            left: 0;
+            transform: scaleX(0);
+            animation: lineWidth 0.5s ease forwards;
+            animation-delay: inherit;
+        }
+
+        @keyframes lineWidth {
+            to { transform: scaleX(1); }
+        }
+
+        .logo-text span:nth-child(1) { animation: revealLetter 0.5s forwards 0.2s; }
+        .logo-text span:nth-child(2) { animation: revealLetter 0.5s forwards 0.4s; }
+        .logo-text span:nth-child(3) { animation: revealLetter 0.5s forwards 0.6s; }
+        .logo-text span:nth-child(4) { animation: revealLetter 0.5s forwards 0.8s; }
+        .logo-text span:nth-child(5) { animation: revealLetter 0.5s forwards 1.0s; }
+        .logo-text span:nth-child(6) { animation: revealLetter 0.5s forwards 1.2s; }
+
+        @keyframes revealLetter {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) rotateX(-90deg);
+                filter: blur(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+                filter: blur(0);
+            }
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, var(--primary) 0%, transparent 70%);
+            opacity: 0;
+            animation: glowPulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.1; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(1.1); }
+        }
+
+        .studio-text {
+            color: var(--primary);
+            font-size: 24px;
+            margin-top: 20px;
+            letter-spacing: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: revealStudio 0.5s forwards 1.5s;
+            position: relative;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .studio-text::before,
+        .studio-text::after {
+            content: '';
+            position: absolute;
+            height: 2px;
+            width: 30px;
+            background: var(--primary);
+            top: 50%;
+            transform: scaleX(0);
+            animation: expandLine 0.5s ease forwards 2s;
+        }
+
+        .studio-text::before { left: -40px; }
+        .studio-text::after { right: -40px; }
+
+        @keyframes expandLine {
+            to { transform: scaleX(1); }
+        }
+
+        .loading-bar {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: rgba(76, 175, 80, 0.1);
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .loading-progress {
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            position: relative;
+            animation: loading 4s linear forwards;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .loading-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shine 1s linear infinite;
+        }
+
+        @keyframes loading {
+            to { width: 100%; }
+        }
+
+        @keyframes shine {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
+        }
+
+        .particle-small {
+            width: 2px;
+            height: 2px;
+            opacity: 0.6;
+        }
+
+        .particle-medium {
+            width: 4px;
+            height: 4px;
+            opacity: 0.8;
+        }
+
+        .particle-large {
+            width: 6px;
+            height: 6px;
+            opacity: 0.4;
+        }
+
+        .particle-glow {
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .particle-trail {
+            animation: particleTrail linear infinite;
+        }
+
+        .particle-pulse {
+            animation: particlePulse linear infinite;
+        }
+
+        .particle-spiral {
+            animation: particleSpiral linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translate(0, 100vh) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: var(--particle-opacity, 1);
+            }
+            100% {
+                transform: translate(var(--tx), -100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @keyframes particleTrail {
+            0% {
+                transform: translate(0, 100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: var(--particle-opacity, 1);
+            }
+            100% {
+                transform: translate(var(--tx), -100px) scale(1) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes particlePulse {
+            0% {
+                transform: translate(0, 100vh) scale(0);
+                opacity: 0;
+            }
+            25% {
+                transform: translate(calc(var(--tx) * 0.25), 50vh) scale(1.5);
+                opacity: var(--particle-opacity, 1);
+            }
+            50% {
+                transform: translate(calc(var(--tx) * 0.5), 0) scale(1);
+            }
+            75% {
+                transform: translate(calc(var(--tx) * 0.75), -50vh) scale(1.5);
+                opacity: var(--particle-opacity, 1);
+            }
+            100% {
+                transform: translate(var(--tx), -100vh) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes particleSpiral {
+            0% {
+                transform: translate(0, 100vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: var(--particle-opacity, 1);
+                transform: translate(var(--tx), 0) scale(1) rotate(360deg);
+            }
+            100% {
+                transform: translate(calc(var(--tx) * 2), -100vh) scale(0) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Star particle effect */
+        .particle-star {
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            background: #fff;
+            animation: particleStar linear infinite;
+        }
+
+        @keyframes particleStar {
+            0% {
+                transform: translate(var(--tx), 100vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(calc(var(--tx) * 0.5), 50vh) scale(1) rotate(180deg);
+                opacity: var(--particle-opacity, 1);
+            }
+            100% {
+                transform: translate(0, -100px) scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Ring particle effect */
+        .particle-ring {
+            border: 2px solid var(--primary);
+            background: transparent;
+            animation: particleRing linear infinite;
+        }
+
+        @keyframes particleRing {
+            0% {
+                transform: translate(0, 100vh) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(var(--tx), 0) scale(1);
+                opacity: var(--particle-opacity, 1);
+            }
+            100% {
+                transform: translate(calc(var(--tx) * 2), -100vh) scale(2);
+                opacity: 0;
+            }
+        }
+
+        .geometric-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .shape {
+            position: absolute;
+            border: 2px solid var(--primary);
+            animation: rotate 20s linear infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            left: 20%;
+            top: 20%;
+            transform: rotate(45deg);
+        }
+
+        .shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            right: 20%;
+            top: 30%;
+            border-radius: 50%;
+        }
+
+        .shape:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            left: 30%;
+            bottom: 20%;
+            transform: rotate(30deg);
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-screen">
+        <div class="geometric-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <div class="particles" id="particles"></div>
+        <div class="glow-effect"></div>
+        <div class="logo-container">
+            <h1 class="logo-text">
+                <span>G</span>
+                <span>E</span>
+                <span>N</span>
+                <span>O</span>
+                <span>V</span>
+                <span>A</span>
+            </h1>
+            <div class="studio-text">STUDIO</div>
+        </div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create enhanced floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = {
+                small: 30,
+                medium: 20,
+                large: 10,
+                star: 5,
+                ring: 5
+            };
+
+            const particleTypes = [
+                { size: 'small', animations: ['particleFloat', 'particleTrail', 'particlePulse'] },
+                { size: 'medium', animations: ['particleSpiral', 'particleTrail'] },
+                { size: 'large', animations: ['particlePulse', 'particleFloat'] },
+                { size: 'medium', type: 'star', animation: 'particleStar' },
+                { size: 'large', type: 'ring', animation: 'particleRing' }
+            ];
+
+            Object.entries(particleCount).forEach(([size, count]) => {
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    const particleType = particleTypes[Math.floor(Math.random() * particleTypes.length)];
+                    
+                    // Base particle class
+                    particle.className = `particle particle-${size}`;
+                    
+                    // Add special type if specified
+                    if (particleType.type) {
+                        particle.classList.add(`particle-${particleType.type}`);
+                    }
+
+                    // Random animation
+                    const animation = particleType.animations ? 
+                        particleType.animations[Math.floor(Math.random() * particleType.animations.length)] :
+                        particleType.animation;
+                    
+                    // Random properties
+                    const duration = Math.random() * 15 + 5;
+                    const tx = Math.random() * 600 - 300;
+                    const startDelay = Math.random() * 5;
+                    const opacity = Math.random() * 0.5 + 0.3;
+
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDuration = duration + 's';
+                    particle.style.animationDelay = startDelay + 's';
+                    particle.style.setProperty('--tx', tx + 'px');
+                    particle.style.setProperty('--particle-opacity', opacity);
+
+                    // Add glow effect randomly
+                    if (Math.random() > 0.7) {
+                        particle.classList.add('particle-glow');
+                    }
+
+                    // Set animation
+                    particle.style.animationName = animation;
+                    
+                    container.appendChild(particle);
+                }
+            });
+        }
+
+        // Initialize
+        window.onload = function() {
+            createParticles();
+        };
+
+        // Redirect after animations complete
+        setTimeout(() => {
+            window.location.replace('index.html');
+        }, 4000);
+
+        // Prevent going back to splash page
+        window.history.pushState(null, '', window.location.href);
+        window.onpopstate = function() {
+            window.history.pushState(null, '', window.location.href);
+        };
+    </script>
+</body>
+</html> 

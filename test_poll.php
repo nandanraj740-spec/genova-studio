@@ -1,0 +1,1 @@
+<?php $ch = curl_init('https://image.pollinations.ai/prompt/test?width=512&height=512&nologo=true'); curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); $res = curl_exec($ch); echo curl_getinfo($ch, CURLINFO_HTTP_CODE); ?>
